@@ -1,4 +1,5 @@
 from __future__ import annotations
+from components.bodyparts import BodyParts
 
 import copy
 import math
@@ -9,6 +10,7 @@ from render_order import RenderOrder
 if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.consumable import Consumable
+    from components.bodyparts import BodyParts
     from components.equipment import Equipment
     from components.equippable import Equippable
     from components.fighter import Fighter
@@ -95,6 +97,7 @@ class Actor(Entity):
         color: Tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
         ai_cls: Type[BaseAI],
+        bodyparts: BodyParts,
         equipment: Equipment,
         fighter: Fighter,
         inventory: Inventory,
@@ -111,6 +114,8 @@ class Actor(Entity):
         )
 
         self.ai: Optional[BaseAI] = ai_cls(self)
+
+        self.bodyparts: BodyParts = bodyparts
 
         self.equipment: Equipment = equipment
         self.equipment.parent = self

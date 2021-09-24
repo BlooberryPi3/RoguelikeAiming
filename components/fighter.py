@@ -9,38 +9,6 @@ from render_order import RenderOrder
 if TYPE_CHECKING:
     from entity import Actor
 
-class BodyParts(BaseComponent):
-    parent: Actor
-
-    def __init__(
-        self, 
-        ihp: int,
-        name: str = "<Unnamed>",
-        ):
-        self.max_individual_hp = ihp
-        self.individual_hp = ihp
-        self.name = name
-
-    @property
-    def ihp(self) -> int:
-        return self.individual_hp
-
-    @ihp.setter
-    def ihp(self, value: int) -> None:
-        self.individual_hp = max(0, min(value, self.max_individual_hp))
-        if self.individual_hp == 0 and self.parent.ai:
-            self.disabled()
-
-    def disabled(self) -> None:
-        if self.engine.player is self.parent:
-            disabled_message = f"Your {self.name} has been disabled!"
-            disabled_message_color = color.player_disabled
-        else:
-            disabled_message = f"The {self.parent.name}s {self.name} has been disabled!"
-            disabled_message_color = color.enemy_disabled
-
-        self.engine.message_log.add_message(disabled_message, disabled_message_color)
-
 class Fighter(BaseComponent):
     parent: Actor
 
@@ -52,6 +20,10 @@ class Fighter(BaseComponent):
 
     @property
     def hp(self) -> int:
+        #for key, value in self.parent.bodyparts.items():
+        #    print("Key:", key)
+        #    print("HP:", value.ihp)
+
         return self._hp
 
     @hp.setter
@@ -100,6 +72,7 @@ class Fighter(BaseComponent):
         self.engine.message_log.add_message(death_message, death_message_color)
 
         self.engine.player.level.add_xp(self.parent.level.xp_given)
+        
 
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:

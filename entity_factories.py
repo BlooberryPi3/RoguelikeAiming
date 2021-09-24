@@ -1,3 +1,6 @@
+from limb_types import LimbType
+from components import bodyparts
+from components.bodyparts import BodyParts
 from components.ai import HostileEnemy
 from components import consumable, equippable
 from components.equipment import Equipment
@@ -16,6 +19,15 @@ player = Actor(
     fighter=Fighter(hp=30, base_defense=1, base_power=2),
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200),
+    bodyparts={
+        'Head': BodyParts(0, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
+        'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
+        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+    }
 )
 
 orc = Actor(
@@ -27,6 +39,15 @@ orc = Actor(
     fighter=Fighter(hp=10, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
+    bodyparts={
+        'Head': BodyParts(5, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
+        'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
+        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+    }
 )
 
 troll = Actor(
@@ -38,6 +59,15 @@ troll = Actor(
     fighter=Fighter(hp=16, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100),
+    bodyparts={
+        'Head': BodyParts(5, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
+        'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
+        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+    }
 )
 
 confusion_scroll = Item(
