@@ -12,24 +12,24 @@ if TYPE_CHECKING:
 class Fighter(BaseComponent):
     parent: Actor
 
-    def __init__(self, hp: int, base_defense: int, base_power: int):
-        self.max_hp = hp
-        self._hp = hp
+    def __init__(self, hpt: int, base_defense: int, base_attack: int):
+        self.max_hp = hpt
+        self._hp = hpt
         self.base_defense = base_defense
-        self.base_power = base_power
+        self.base_power = base_attack
 
     @property
-    def hp(self) -> int:
-        #for key, value in self.parent.bodyparts.items():
-        #    print("Key:", key)
-        #    print("HP:", value.ihp)
-
+    def hpt(self) -> int:
+        #max_total_ihp = sum(part.max_individual_hp for part in self.parent.bodyparts.values())
+        #print(max_total_ihp)
         return self._hp
 
-    @hp.setter
-    def hp(self, value: int) -> None:
-        self._hp = max(0, min(value, self.max_hp))
-        if self._hp == 0 and self.parent.ai:
+    @hpt.setter
+    def hpt(self, value: int) -> None:
+        hpthreshold = self.max_hp
+        self._hp = sum(part.individual_hp for part in self.parent.bodyparts.values())
+        print("HP", self._hp)
+        if self._hp <= hpthreshold and self.parent.ai:
             self.die()
 
     @property
@@ -37,8 +37,8 @@ class Fighter(BaseComponent):
         return self.base_defense + self.defense_bonus
 
     @property
-    def power(self) -> int:
-        return self.base_power + self.power_bonus
+    def attack(self) -> int:
+        return self.base_power #+ self.power_bonus
 
     @property
     def defense_bonus(self) -> int:
@@ -47,12 +47,12 @@ class Fighter(BaseComponent):
         else:
             return 0
 
-    @property
-    def power_bonus(self) -> int:
-        if self.parent.equipment:
-            return self.parent.equipment.power_bonus
-        else:
-            return 0
+    #@property
+    #def power_bonus(self) -> int:
+    #    if self.parent.equipment:
+    #        return self.parent.equipment.power_bonus
+    #    else:
+    #        return 0
 
     def die(self) -> None:
         if self.engine.player is self.parent:

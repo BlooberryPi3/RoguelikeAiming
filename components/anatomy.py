@@ -1,6 +1,5 @@
 from __future__ import annotations
-from components.fighter import Fighter
-from components.fighter import BodyParts
+from components.bodyparts import BodyParts
 
 from typing import List, TYPE_CHECKING
 
@@ -12,6 +11,5 @@ if TYPE_CHECKING:
 class Anatomy(BaseComponent):
     parent: Actor
 
-    def __init__(self, capacity: int):
-        self.capacity = capacity
+    def __init__(self):
         self.fighter: List[BodyParts] = []

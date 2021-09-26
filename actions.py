@@ -4,10 +4,11 @@ from typing import Optional, Tuple, TYPE_CHECKING
 
 import color
 import exceptions
+import random
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Actor, Entity, Item
+    from entity import Actor, Entity, Item, Attack
 
 
 class Action:
@@ -78,6 +79,45 @@ class ItemAction(Action):
         if self.item.consumable:
             self.item.consumable.activate(self)
 
+class TargetingAction(Action):
+    def __init__(
+        self, entity: Actor, target_xy: Optional[Tuple[int, int]] = None
+    ):
+        super().__init__(entity)
+        if not target_xy:
+            target_xy = entity.x, entity.y
+        self.target_xy = target_xy
+        self.entity = entity
+
+    @property
+    def target_actor(self) -> Optional[Actor]:
+        """Return the actor at this actions destination."""
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)
+
+    def perform(self) -> None:
+        """Invoke the items ability, this action will be given to provide context."""
+        #print(f"{self.entity.name} targeting {self.target_actor.name} at {self.target_xy}")
+        return self.entity.attack.activate(self)
+
+class PartSelectionAction(Action):
+    def __init__(
+        self, entity: Actor, target_xy: Optional[Tuple[int, int]] = None
+    ):
+        super().__init__(entity)
+        if not target_xy:
+            target_xy = entity.x, entity.y
+        self.target_xy = target_xy
+        self.entity = entity
+
+    @property
+    def target_actor(self) -> Optional[Actor]:
+        """Return the actor at this actions destination."""
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)
+
+    def perform(self) -> None:
+        """Invoke the items ability, this action will be given to provide context."""
+        #print(f"{self.entity.name} targeting {self.target_actor.name} at {self.target_xy}")
+        return self.entity.attack.activate(self)
 
 class DropItem(ItemAction):
     def perform(self) -> None:
@@ -144,7 +184,7 @@ class MeleeAction(ActionWithDirection):
         if not target:
             raise exceptions.Impossible("Nothing to attack.")
 
-        damage = self.entity.fighter.power - target.fighter.defense
+        damage = self.entity.fighter.attack - target.fighter.defense
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if self.entity is self.engine.player:
@@ -156,12 +196,12 @@ class MeleeAction(ActionWithDirection):
             self.engine.message_log.add_message(
                 f"{attack_desc} for {damage} hit points.", attack_color
             )
-            target.fighter.hp -= damage
+            target_bodypart = random.choice(list(target.bodyparts.values()))
+            target_bodypart.ihp -= damage
         else:
             self.engine.message_log.add_message(
                 f"{attack_desc} but does no damage.", attack_color
             )
-
 
 class MovementAction(ActionWithDirection):
     def perform(self) -> None:

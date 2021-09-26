@@ -1,9 +1,10 @@
 from __future__ import annotations
+from components.equippable_weapons import EquippableWep
 from components.bodyparts import BodyParts
 
 import copy
 import math
-from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
+from typing import List, Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
 
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
     from components.fighter import Fighter
     from components.inventory import Inventory
     from components.level import Level
+    from components.attacks import Attack
     from game_map import GameMap
 
 T = TypeVar("T", bound="Entity")
@@ -79,7 +81,7 @@ class Entity:
         """
         Return the distance between the current entity and the given (x, y) coordinate.
         """
-        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+        return max(abs(x - self.x), abs(y - self.y))
 
     def move(self, dx: int, dy: int) -> None:
         # Move the entity by a given amount
@@ -102,6 +104,7 @@ class Actor(Entity):
         fighter: Fighter,
         inventory: Inventory,
         level: Level,
+        attack: Optional[Attack] = None,
     ):
         super().__init__(
             x=x,
@@ -116,6 +119,8 @@ class Actor(Entity):
         self.ai: Optional[BaseAI] = ai_cls(self)
 
         self.bodyparts: BodyParts = bodyparts
+        for parts in self.bodyparts.values():
+            parts.parent = self
 
         self.equipment: Equipment = equipment
         self.equipment.parent = self
@@ -128,6 +133,12 @@ class Actor(Entity):
 
         self.level = level
         self.level.parent = self
+
+        self.attack = attack
+        if self.attack:
+            self.attack.parent = self
+
+        self.anatomy: List[BodyParts] = []
 
     @property
     def is_alive(self) -> bool:
@@ -146,6 +157,7 @@ class Item(Entity):
         name: str = "<Unnamed>",
         consumable: Optional[Consumable] = None,
         equippable: Optional[Equippable] = None,
+        equippablewep: Optional[EquippableWep] = None,
     ):
         super().__init__(
             x=x,
@@ -166,3 +178,8 @@ class Item(Entity):
 
         if self.equippable:
             self.equippable.parent = self
+
+        self.equippablewep = equippablewep
+
+        if self.equippablewep:
+            self.equippablewep.parent = self

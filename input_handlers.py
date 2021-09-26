@@ -18,7 +18,7 @@ import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Item
+    from entity import Item, Actor, BodyParts
 
 
 MOVE_KEYS = {
@@ -227,7 +227,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         )
 
         console.print(
-            x=x + 1, y=y + 4, string=f"Attack: {self.engine.player.fighter.power}"
+            x=x + 1, y=y + 4, string=f"Attack: {self.engine.player.fighter.attack}"
         )
         console.print(
             x=x + 1, y=y + 5, string=f"Defense: {self.engine.player.fighter.defense}"
@@ -266,7 +266,7 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.power})",
+            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.attack})",
         )
         console.print(
             x=x + 1,
@@ -299,7 +299,78 @@ class LevelUpEventHandler(AskUserEventHandler):
         """
         Don't allow the player to click to exit the menu, like normal.
         """
-        return None
+        return None    
+
+class TargetingEventHandler(AskUserEventHandler):
+    """This handler lets the user select a bodypart.
+
+    Then moves onto the attack.
+    """
+
+    TITLE = "Choose a bodypart to target."
+
+    def on_render(self, console: tcod.Console) -> None:
+        """Render an inventory menu, which displays the items in the inventory, and the letter to select them.
+        Will move to a different position based on where the player is located, so the player can always see where
+        they are.
+        """
+        super().on_render(console)
+        number_of_parts_on_anatomy = len(self.engine.player.anatomy)
+
+        height = number_of_parts_on_anatomy + 2
+
+        print("This is a test for TEH")
+
+        if height <= 3:
+            height = 3
+
+        if self.engine.player.x <= 30:
+            x = 40
+        else:
+            x = 0
+
+        y = 0
+
+        width = len(self.TITLE) + 4
+
+        console.draw_frame(
+            x=x,
+            y=y,
+            width=width,
+            height=height,
+            title=self.TITLE,
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
+
+        if number_of_parts_on_anatomy > 0:
+            for i, bodypart in enumerate(self.engine.player.anatomy):
+                bodypart_key = chr(ord("a") + i)
+
+                bodypart_string = f"({bodypart_key}) {bodypart.name}"
+
+                console.print(x + 1, y + i + 1, bodypart_string)
+        else:
+            console.print(x + 1, y + 1, "(Empty)")
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        player = self.engine.player
+        key = event.sym
+        index = key - tcod.event.K_a
+
+        if 0 <= index <= 26:
+            try:
+                selected_bodypart = player.anatomy[index]
+            except IndexError:
+                self.engine.message_log.add_message("Invalid entry.", color.invalid)
+                return None
+            return self.on_bodypart_selected(selected_bodypart)
+        return super().ev_keydown(event)
+
+    def on_bodypart_selected(self, bodypart: BodyParts) -> Optional[ActionOrHandler]:
+        """Called when the user selects a valid bodypart."""
+        raise NotImplementedError()
 
 class InventoryEventHandler(AskUserEventHandler):
     """This handler lets the user select an item.
@@ -374,7 +445,6 @@ class InventoryEventHandler(AskUserEventHandler):
         """Called when the user selects a valid item."""
         raise NotImplementedError()
 
-
 class InventoryActivateHandler(InventoryEventHandler):
     """Handle using an inventory item."""
 
@@ -385,6 +455,8 @@ class InventoryActivateHandler(InventoryEventHandler):
             # Return the action for the selected item.
             return item.consumable.get_action(self.engine.player)
         elif item.equippable:
+            return actions.EquipAction(self.engine.player, item)
+        elif item.equippablewep:
             return actions.EquipAction(self.engine.player, item)
         else:
             return None
@@ -544,6 +616,11 @@ class MainGameEventHandler(EventHandler):
             return CharacterScreenEventHandler(self.engine)
         elif key == tcod.event.K_SLASH:
             return LookHandler(self.engine)
+        elif key == tcod.event.K_t:
+            return SingleRangedAttackHandler(
+                self.engine, 
+                callback=lambda xy: actions.TargetingAction(self.engine.player, xy),
+                )
 
         # No valid key was pressed
         return action

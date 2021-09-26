@@ -4,6 +4,7 @@ from typing import Optional, TYPE_CHECKING
 
 from components.base_component import BaseComponent
 from equipment_types import EquipmentType
+from weapon_types import WeaponType
 
 if TYPE_CHECKING:
     from entity import Actor, Item
@@ -12,21 +13,33 @@ if TYPE_CHECKING:
 class Equipment(BaseComponent):
     parent: Actor
 
-    def __init__(self, 
-    weapon: Optional[Item] = None, 
+    def __init__(self,
+
+    weapon: Optional[Item] = None,
+    ranged: Optional[Item] = None,
+    melee: Optional[Item] = None,
+    range: Optional[Item] = None,
+
     armor: Optional[Item] = None, 
     accessory: Optional[Item] = None,
     ):
         self.weapon = weapon
+        self.ranged = ranged
+        self.melee = melee
+
         self.armor = armor
         self.accessory = accessory
 
     @property
+    def attack_value(self) -> int:
+        wep_attack = 0
+
+        if self.weapon is not None and self.weapon.equippablewep is not None:
+            wep_attack += self.weapon.equippablewep.attack_value
+
+    @property
     def defense_bonus(self) -> int:
         bonus = 0
-
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.weapon.equippable.defense_bonus
 
         if self.armor is not None and self.armor.equippable is not None:
             bonus += self.armor.equippable.defense_bonus
@@ -36,23 +49,8 @@ class Equipment(BaseComponent):
 
         return bonus
 
-    @property
-    def power_bonus(self) -> int:
-        bonus = 0
-
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.weapon.equippable.power_bonus
-
-        if self.armor is not None and self.armor.equippable is not None:
-            bonus += self.armor.equippable.power_bonus
-
-        if self.accessory is not None and self.accessory.equippable is not None:
-            bonus += self.accessory.equippable.power_bonus
-
-        return bonus
-
     def item_is_equipped(self, item: Item) -> bool:
-        return self.weapon == item or self.armor == item
+        return self.weapon == item or self.armor == item or self.accessory == item
 
     def unequip_message(self, item_name: str) -> None:
         self.parent.gamemap.engine.message_log.add_message(
@@ -85,8 +83,8 @@ class Equipment(BaseComponent):
 
     def toggle_equip(self, equippable_item: Item, add_message: bool = True) -> None:
         if (
-            equippable_item.equippable
-            and equippable_item.equippable.equipment_type == EquipmentType.WEAPON
+            equippable_item.equippablewep
+            and equippable_item.equippablewep.equipment_type == EquipmentType.WEAPON
         ):
             slot = "weapon"
         elif (

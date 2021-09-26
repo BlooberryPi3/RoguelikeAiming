@@ -1,12 +1,12 @@
 from limb_types import LimbType
-from components import bodyparts
 from components.bodyparts import BodyParts
 from components.ai import HostileEnemy
-from components import consumable, equippable
+from components import consumable, equippable, equippable_weapons
 from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
+from components.attacks import Attack
 from entity import Actor, Item
 
 
@@ -16,17 +16,18 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=30, base_defense=1, base_power=2),
+    fighter=Fighter(hpt=10, base_defense=1, base_attack=2),
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200),
+    attack=Attack(),
     bodyparts={
-        'Head': BodyParts(0, LimbType.HEAD, "Head"),
-        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
-        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
-        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
-        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
-        'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
-        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+        'Head': BodyParts(2, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(3, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(3, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(3, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(3, LimbType.RIGHT_LEG, "Right Leg"),
+        'Torso': BodyParts(6, LimbType.TORSO, "Torso"),
+        'Eyes': BodyParts(1, LimbType.EYES, "Eyes"),
     }
 )
 
@@ -36,17 +37,17 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),
+    fighter=Fighter(hpt=10, base_defense=0, base_attack=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
     bodyparts={
-        'Head': BodyParts(5, LimbType.HEAD, "Head"),
-        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
-        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
-        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
-        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
+        'Head': BodyParts(2, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(3, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(3, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(3, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(3, LimbType.RIGHT_LEG, "Right Leg"),
         'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
-        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+        'Eyes': BodyParts(1, LimbType.EYES, "Eyes"),
     }
 )
 
@@ -56,17 +57,17 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),
+    fighter=Fighter(hpt=16, base_defense=1, base_attack=4),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100),
     bodyparts={
-        'Head': BodyParts(5, LimbType.HEAD, "Head"),
-        'Left Arm': BodyParts(5, LimbType.LEFT_ARM, "Left Arm"),
-        'Right Arm': BodyParts(5, LimbType.RIGHT_ARM, "Right Arm"),
-        'Left Leg': BodyParts(5, LimbType.LEFT_ARM, "Left Leg"),
-        'Right Leg': BodyParts(5, LimbType.RIGHT_LEG, "Right Leg"),
+        'Head': BodyParts(2, LimbType.HEAD, "Head"),
+        'Left Arm': BodyParts(3, LimbType.LEFT_ARM, "Left Arm"),
+        'Right Arm': BodyParts(3, LimbType.RIGHT_ARM, "Right Arm"),
+        'Left Leg': BodyParts(3, LimbType.LEFT_ARM, "Left Leg"),
+        'Right Leg': BodyParts(3, LimbType.RIGHT_LEG, "Right Leg"),
         'Torso': BodyParts(5, LimbType.TORSO, "Torso"),
-        'Eyes': BodyParts(2, LimbType.EYES, "Eyes"),
+        'Eyes': BodyParts(1, LimbType.EYES, "Eyes"),
     }
 )
 
@@ -98,18 +99,18 @@ lightning_scroll = Item(
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
 )
 
-dagger = Item(
-    char="/", 
-    color=(0, 191, 255), 
-    name="Dagger", 
-    equippable=equippable.Dagger()
+sword = Item(
+    char="/",
+    color=(139, 69, 19),
+    name="Sword",
+    equippablewep=equippable_weapons.Sword(),
 )
 
-sword = Item(
+knife = Item(
     char="/", 
-    color=(0, 191, 255), 
-    name="Sword", 
-    equippable=equippable.Sword()
+    color=(139, 69, 19), 
+    name="Knife", 
+    equippablewep=equippable_weapons.Knife(),
 )
 
 leather_armor = Item(

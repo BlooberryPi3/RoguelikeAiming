@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Tuple, TYPE_CHECKING
 
+from numpy import minimum
+
 import color
 
 if TYPE_CHECKING:
@@ -22,9 +24,9 @@ def get_names_at_location(x: int, y: int, game_map: GameMap) -> str:
 
 
 def render_bar(
-    console: Console, current_value: int, maximum_value: int, total_width: int
+    console: Console, current_value: int, maximum_value: int, minimum_value: int, total_width: int
 ) -> None:
-    bar_width = int(float(current_value) / maximum_value * total_width)
+    bar_width = int(float(current_value - minimum_value) / (maximum_value - minimum_value) * total_width)
 
     console.draw_rect(x=0, y=45, width=20, height=1, ch=1, bg=color.bar_empty)
 
@@ -34,7 +36,7 @@ def render_bar(
         )
 
     console.print(
-        x=1, y=45, string=f"HP: {current_value}/{maximum_value}", fg=color.bar_text
+        x=1, y=45, string=f"HP: {current_value - minimum_value}/{maximum_value - minimum_value}", fg=color.bar_text
     )
 
 def render_dungeon_level(
