@@ -309,6 +309,9 @@ class TargetingEventHandler(AskUserEventHandler):
 
     TITLE = "Choose a bodypart to target."
 
+    def __init__(self):
+        print("Targeting Handler Ran")
+
     def on_render(self, console: tcod.Console) -> None:
         """Render an inventory menu, which displays the items in the inventory, and the letter to select them.
         Will move to a different position based on where the player is located, so the player can always see where

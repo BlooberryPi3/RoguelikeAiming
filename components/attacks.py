@@ -50,9 +50,8 @@ class Attack(BaseComponent):
             
             self.targetingact(attacker, target)
     
-    def targetingact(self, attacker: Actor, target: Actor) -> None:
+    def targetingact(self, attacker: Actor, target: Actor) -> TargetingEventHandler:
         self.engine.message_log.add_message(
             "Select a target location.", color.needs_target
         )
-        
-        actions.PartSelectionAction(attacker, target)
+        TargetingEventHandler()

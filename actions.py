@@ -101,23 +101,13 @@ class TargetingAction(Action):
 
 class PartSelectionAction(Action):
     def __init__(
-        self, entity: Actor, target_xy: Optional[Tuple[int, int]] = None
+        self
     ):
-        super().__init__(entity)
-        if not target_xy:
-            target_xy = entity.x, entity.y
-        self.target_xy = target_xy
-        self.entity = entity
+        print("PartSelectionRan")
 
-    @property
-    def target_actor(self) -> Optional[Actor]:
-        """Return the actor at this actions destination."""
-        return self.engine.game_map.get_actor_at_location(*self.target_xy)
 
     def perform(self) -> None:
-        """Invoke the items ability, this action will be given to provide context."""
-        #print(f"{self.entity.name} targeting {self.target_actor.name} at {self.target_xy}")
-        return self.entity.attack.activate(self)
+        return 
 
 class DropItem(ItemAction):
     def perform(self) -> None:
